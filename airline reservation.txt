@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airline Reservation System</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #003366;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        
+        nav {
+            background-color: #0055a4;
+            padding: 10px 0;
+        }
+        
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        
+        nav ul li {
+            margin: 0 15px;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        nav ul li a:hover {
+            background-color: #00417c;
+        }
+        
+        section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            padding: 20px;
+        }
+        
+        h1, h2, h3 {
+            color: #003366;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            color: #003366;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="date"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #003366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #00417c;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .flight-details {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 5px solid #003366;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            background-color: #003366;
+            color: white;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>SkyWay Airlines</h1>
+        <p>Your journey begins with us</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#" class="nav-link" data-tab="search-flights">Search Flights</a></li>
+            <li><a href="#" class="nav-link" data-tab="bookings">My Bookings</a></li>
+            <li><a href="#" class="nav-link" data-tab="admin">Admin</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div id="alerts"></div>
+        
+        <!-- Search Flights Tab -->
+        <section id="search-flights" class="tab-content active">
+            <h2>Find Your Flight</h2>
+            <form id="search-form">
+                <div class="form-group">
+                    <label for="origin">Origin:</label>
+                    <input type="text" id="origin" name="origin" placeholder="Departure City">
+                </div>
+                
+                <div class="form-group">
+                    <label for="destination">Destination:</label>
+                    <input type="text" id="destination" name="destination" placeholder="Arrival City">
+                </div>
+                
+                <div class="form-group">
+                    <label for="departure-date">Departure Date:</label>
+                    <input type="date" id="departure-date" name="departure-date">
+                </div>
+                
+                <button type="submit">Search Flights</button>
+            </form>
+            
+            <div id="search-results" style="display: none;">
+                <h3>Available Flights</h3>
+                <table id="flights-table">
+                    <thead>
+                        <tr>
+                            <th>Flight ID</th>
+                            <th>Airline</th>
+                            <th>Origin</th>
+                            <th>Destination</th>
+                            <th>Departure</th>
+                            <th>Arrival</th>
+                            <th>Available Seats</th>
+                            <th>Price</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="flights-table-body">
+                        <!-- Flight data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="booking-form-container" style="display: none;">
+                <h3>Book Your Flight</h3>
+                <div class="flight-details" id="selected-flight-details">
+                    <!-- Selected flight details will be shown here -->
+                </div>
+                
+                <form id="booking-form">
+                    <input type="hidden" id="booking-flight-id">
+                    <h4>Passenger Information</h4>
+                    
+                    <div class="form-group">
+                        <label for="first-name">First Name:</label>
+                        <input type="text" id="first-name" name="first-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="last-name">Last Name:</label>
+                        <input type="text" id="last-name" name="last-name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    
+                    <button type="submit">Confirm Booking</button>
+                </form>
+            </div>
+        </section>
+        
+        <!-- My Bookings Tab -->
+        <section id="bookings" class="tab-content">
+            <h2>My Bookings</h2>
+            <div class="form-group">
+                <label for="booking-id">Enter Booking ID:</label>
+                <input type="text" id="booking-id" name="booking-id" placeholder="Your booking reference number">
+                <button id="find-booking-btn">Find Booking</button>
+            </div>
+            
+            <div id="booking-details" style="display: none;" class="booking-details">
+                <!-- Booking details will be shown here -->
+            </div>
+        </section>
+        
+        <!-- Admin Tab -->
+        <section id="admin" class="tab-content">
+            <h2>Admin Panel</h2>
+            <h3>Add New Flight</h3>
+            <form id="add-flight-form">
+                <div class="form-group">
+                    <label for="flight-id">Flight ID:</label>
+                    <input type="text" id="flight-id" name="flight-id" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="airline">Airline:</label>
+                    <input type="text" id="airline" name="airline" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="flight-origin">Origin:</label>
+                    <input type="text" id="flight-origin" name="flight-origin" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="flight-destination">Destination:</label>
+                    <input type="text" id="flight-destination" name="flight-destination" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="departure-datetime">Departure Date/Time:</label>
+                    <input type="datetime-local" id="departure-datetime" name="departure-datetime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="arrival-datetime">Arrival Date/Time:</label>
+                    <input type="datetime-local" id="arrival-datetime" name="arrival-datetime" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="capacity">Capacity:</label>
+                    <input type="number" id="capacity" name="capacity" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="price">Price ($):</label>
+                    <input type="number" id="price" name="price" min="0" step="0.01" required>
+                </div>
+                
+                <button type="submit">Add Flight</button>
+            </form>
+        </section>
+    </div>
+    
+    <footer>
+        <p>&copy; 2025 SkyWay Airlines. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Sample data structure for the application
+        let flights = [
+            {
+                flight_id: "AA101",
+                airline: "American Airlines",
+                origin: "New York",
+                destination: "Los Angeles",
+                departure_time: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // tomorrow
+                arrival_time: new Date(Date.now() + 24 * 60 * 60 * 1000 + 6 * 60 * 60 * 1000).toISOString(), // tomorrow + 6 hours
+                capacity: 150,
+                price: 349.99,
+                available_seats: 150,
+                passengers: []
+            },
+            {
+                flight_id: "DL202",
+                airline: "Delta Airlines",
+                origin: "Chicago",
+                destination: "Miami",
+                departure_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // day after tomorrow
+                arrival_time: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000 + 3 * 60 * 60 * 1000).toISOString(), // day after tomorrow + 3 hours
+                capacity: 120,
+                price: 299.99,
+                available_seats: 120,
+                passengers: []
+            },
+            {
+                flight_id: "UA303",
+                airline: "United Airlines",
+                origin: "San Francisco",
+                destination: "Boston",
+                departure_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+                arrival_time: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000 + 5.5 * 60 * 60 * 1000).toISOString(), // 3 days from now + 5.5 hours
+                capacity: 180,
+                price: 429.99,
+                available_seats: 180,
+                passengers: []
+            }
+        ];
+        
+        let bookings = [];
+
+        // Load data from localStorage if available
+        function loadData() {
+            const savedFlights = localStorage.getItem('flights');
+            const savedBookings = localStorage.getItem('bookings');
+            
+            if (savedFlights) {
+                flights = JSON.parse(savedFlights);
+                
+                // Convert string dates back to Date objects
+                flights.forEach(flight => {
+                    flight.departure_time = new Date(flight.departure_time).toISOString();
+                    flight.arrival_time = new Date(flight.arrival_time).toISOString();
+                });
+            }
+            
+            if (savedBookings) {
+                bookings = JSON.parse(savedBookings);
+                
+                // Convert string dates back to Date objects
+                bookings.forEach(booking => {
+                    booking.booking_date = new Date(booking.booking_date).toISOString();
+                });
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('flights', JSON.stringify(flights));
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString();
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alerts');
+            alertDiv.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            
+            // Clear the alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.innerHTML = '';
+            }, 5000);
+        }
+
+        // Tab navigation
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Hide all tabs
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Show the selected tab
+                const tabId = link.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+
+        // Search flights
+        document.getElementById('search-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const origin = document.getElementById('origin').value.toLowerCase();
+            const destination = document.getElementById('destination').value.toLowerCase();
+            const dateInput = document.getElementById('departure-date').value;
+            
+            // Filter flights based on search criteria
+            let filteredFlights = flights;
+            
+            if (origin) {
+                filteredFlights = filteredFlights.filter(flight => 
+                    flight.origin.toLowerCase().includes(origin)
+                );
+            }
+            
+            if (destination) {
+                filteredFlights = filteredFlights.filter(flight => 
+                    flight.destination.toLowerCase().includes(destination)
+                );
+            }
+            
+            if (dateInput) {
+                const searchDate = new Date(dateInput);
+                filteredFlights = filteredFlights.filter(flight => {
+                    const departureDate = new Date(flight.departure_time);
+                    return departureDate.toDateString() === searchDate.toDateString();
+                });
+            }
+            
+            displaySearchResults(filteredFlights);
+        });
+
+        // Display search results
+        function displaySearchResults(results) {
+            const tableBody = document.getElementById('flights-table-body');
+            tableBody.innerHTML = '';
+            
+            if (results.length === 0) {
+                document.getElementById('search-results').style.display = 'block';
+                tableBody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No flights found matching your criteria.</td></tr>';
+                return;
+            }
+            
+            results.forEach(flight => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${flight.flight_id}</td>
+                    <td>${flight.airline}</td>
+                    <td>${flight.origin}</td>
+                    <td>${flight.destination}</td>
+                    <td>${formatDate(flight.departure_time)}</td>
+                    <td>${formatDate(flight.arrival_time)}</td>
+                    <td>${flight.available_seats}/${flight.capacity}</td>
+                    <td>$${flight.price.toFixed(2)}</td>
+                    <td>
+                        <button class="book-flight-btn" data-flight-id="${flight.flight_id}"
+                        ${flight.available_seats === 0 ? 'disabled' : ''}>
+                            ${flight.available_seats === 0 ? 'Sold Out' : 'Book'}
+                        </button>
+                    </td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to the book buttons
+            document.querySelectorAll('.book-flight-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const flightId = btn.getAttribute('data-flight-id');
+                    showBookingForm(flightId);
+                });
+            });
+            
+            document.getElementById('search-results').style.display = 'block';
+        }
+
+        // Show booking form for selected flight
+        function showBookingForm(flightId) {
+            const flight = flights.find(f => f.flight_id === flightId);
+            
+            if (!flight) {
+                showAlert('Flight not found.', 'danger');
+                return;
+            }
+            
+            // Display flight details
+            const flightDetails = document.getElementById('selected-flight-details');
+            flightDetails.innerHTML = `
+                <h4>${flight.airline} - Flight ${flight.flight_id}</h4>
+                <p><strong>From:</strong> ${flight.origin} <strong>To:</strong> ${flight.destination}</p>
+                <p><strong>Departure:</strong> ${formatDate(flight.departure_time)}</p>
+                <p><strong>Arrival:</strong> ${formatDate(flight.arrival_time)}</p>
+                <p><strong>Available Seats:</strong> ${flight.available_seats}/${flight.capacity}</p>
+                <p><strong>Price:</strong> $${flight.price.toFixed(2)}</p>
+            `;
+            
+            // Set the flight ID in the hidden field
+            document.getElementById('booking-flight-id').value = flightId;
+            
+            // Show the booking form
+            document.getElementById('booking-form-container').style.display = 'block';
+            
+            // Scroll to the booking form
+            document.getElementById('booking-form-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Process booking form submission
+        document.getElementById('booking-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const flightId = document.getElementById('booking-flight-id').value;
+            const firstName = document.getElementById('first-name').value;
+            const lastName = document.getElementById('last-name').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            
+            // Find the flight
+            const flightIndex = flights.findIndex(f => f.flight_id === flightId);
+            
+            if (flightIndex === -1) {
+                showAlert('Flight not found.', 'danger');
+                return;
+            }
+            
+            const flight = flights[flightIndex];
+            
+            // Check if seats are available
+            if (flight.available_seats <= 0) {
+                showAlert('Sorry, this flight is fully booked.', 'danger');
+                return;
+            }
+            
+            // Create passenger
+            const passengerId = 'p' + Date.now();
+            const passenger = {
+                id: passengerId,
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                phone: phone
+            };
+            
+            // Add passenger to flight
+            flights[flightIndex].passengers.push(passenger);
+            flights[flightIndex].available_seats--;
+            
+            // Create booking
+            const bookingId = 'B' + Date.now();
+            const booking = {
+                booking_id: bookingId,
+                passenger_id: passengerId,
+                flight_id: flightId,
+                booking_date: new Date().toISOString(),
+                status: 'Confirmed'
+            };
+            
+            bookings.push(booking);
+            
+            // Save data
+            saveData();
+            
+            // Show success message
+            showAlert(`Booking successful! Your booking ID is: ${bookingId}`, 'success');
+            
+            // Reset form and hide booking form
+            document.getElementById('booking-form').reset();
+            document.getElementById('booking-form-container').style.display = 'none';
+            document.getElementById('search-results').style.display = 'none';
+        });
+
+        // Find booking
+        document.getElementById('find-booking-btn').addEventListener('click', () => {
+            const bookingId = document.getElementById('booking-id').value;
+            
+            if (!bookingId) {
+                showAlert('Please enter a booking ID.', 'danger');
+                return;
+            }
+            
+            const booking = bookings.find(b => b.booking_id === bookingId);
+            
+            if (!booking) {
+                showAlert('Booking not found.', 'danger');
+                return;
+            }
+            
+            const flight = flights.find(f => f.flight_id === booking.flight_id);
+            
+            if (!flight) {
+                showAlert('Flight information not found.', 'danger');
+                return;
+            }
+            
+            const passenger = flight.passengers.find(p => p.id === booking.passenger_id);
+            
+            if (!passenger) {
+                showAlert('Passenger information not found.', 'danger');
+                return;
+            }
+            
+            // Display booking details
+            const bookingDetails = document.getElementById('booking-details');
+            bookingDetails.innerHTML = `
+                <h3>Booking #${booking.booking_id}</h3>
+                <p><strong>Status:</strong> ${booking.status}</p>
+                <p><strong>Booking Date:</strong> ${formatDate(booking.booking_date)}</p>
+                
+                <h4>Passenger Information</h4>
+                <p><strong>Name:</strong> ${passenger.first_name} ${passenger.last_name}</p>
+                <p><strong>Email:</strong> ${passenger.email}</p>
+                <p><strong>Phone:</strong> ${passenger.phone}</p>
+                
+                <h4>Flight Information</h4>
+                <p><strong>Flight:</strong> ${flight.airline} - ${flight.flight_id}</p>
+                <p><strong>Route:</strong> ${flight.origin} to ${flight.destination}</p>
+                <p><strong>Departure:</strong> ${formatDate(flight.departure_time)}</p>
+                <p><strong>Arrival:</strong> ${formatDate(flight.arrival_time)}</p>
+                
+                ${booking.status === 'Confirmed' ? 
+                  `<button id="cancel-booking-btn" data-booking-id="${booking.booking_id}">Cancel Booking</button>` : ''}
+            `;
+            
+            bookingDetails.style.display = 'block';
+            
+            // Add event listener for cancel button if present
+            const cancelBtn = document.getElementById('cancel-booking-btn');
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', () => {
+                    cancelBooking(booking.booking_id);
+                });
+            }
+        });
+
+        // Cancel booking
+        function cancelBooking(bookingId) {
+            const bookingIndex = bookings.findIndex(b => b.booking_id === bookingId);
+            
+            if (bookingIndex === -1) {
+                showAlert('Booking not found.', 'danger');
+                return;
+            }
+            
+            const booking = bookings[bookingIndex];
+            
+            if (booking.status === 'Cancelled') {
+                showAlert('This booking is already cancelled.', 'danger');
+                return;
+            }
+            
+            // Update booking status
+            bookings[bookingIndex].status = 'Cancelled';
+            
+            // Find the flight and update available seats
+            const flightIndex = flights.findIndex(f => f.flight_id === booking.flight_id);
+            
+            if (flightIndex !== -1) {
+                flights[flightIndex].available_seats++;
+            }
+            
+            // Save data
+            saveData();
+            
+            // Update booking details display
+            document.getElementById('find-booking-btn').click();
+            
+            showAlert('Booking cancelled successfully.', 'success');
+        }
+
+        // Add new flight (admin)
+        document.getElementById('add-flight-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const flightId = document.getElementById('flight-id').value;
+            const airline = document.getElementById('airline').value;
+            const origin = document.getElementById('flight-origin').value;
+            const destination = document.getElementById('flight-destination').value;
+            const departureDateTime = document.getElementById('departure-datetime').value;
+            const arrivalDateTime = document.getElementById('arrival-datetime').value;
+            const capacity = parseInt(document.getElementById('capacity').value);
+            const price = parseFloat(document.getElementById('price').value);
+            
+            // Check if flight ID already exists
+            if (flights.some(f => f.flight_id === flightId)) {
+                showAlert('A flight with this ID already exists.', 'danger');
+                return;
+            }
+            
+            // Create new flight
+            const newFlight = {
+                flight_id: flightId,
+                airline: airline,
+                origin: origin,
+                destination: destination,
+                departure_time: new Date(departureDateTime).toISOString(),
+                arrival_time: new Date(arrivalDateTime).toISOString(),
+                capacity: capacity,
+                price: price,
+                available_seats: capacity,
+                passengers: []
+            };
+            
+            // Add flight to the list
+            flights.push(newFlight);
+            
+            // Save data
+            saveData();
+            
+            // Reset form
+            document.getElementById('add-flight-form').reset();
+            
+            showAlert(`Flight ${flightId} added successfully.`, 'success');
+        });
+
+        // Initialize the application
+        loadData();
+    </script>
+</body>
+</html>
